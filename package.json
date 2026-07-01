@@ -1,0 +1,19 @@
+{
+  "name": "com.nachowhy.shadergraph-node-exporter",
+  "displayName": "Shader Graph Node Exporter",
+  "version": "1.0.0",
+  "unity": "6000.3",
+  "description": "Exports the selected Shader Graph node preview output to PNG, EXR, JPG, or TGA from the Shader Graph context menu.",
+  "keywords": [
+    "shadergraph",
+    "texture",
+    "export",
+    "editor"
+  ],
+  "dependencies": {
+    "com.unity.shadergraph": "17.3.0"
+  },
+  "author": {
+    "name": "NachoWhy"
+  }
+}
