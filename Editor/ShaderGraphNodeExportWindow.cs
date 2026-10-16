@@ -69,7 +69,7 @@ namespace NachoWhy.SgNodeExporter
         List<MaterialSlot> m_OutputSlots = new List<MaterialSlot>();
         MaterialSlot m_OutputSlot;
         Vector2 m_Scroll;
-        bool m_ShowPropertyOverrides = true;
+        bool m_ShowPropertyOverrides;
         string m_Status;
         MessageType m_StatusType = MessageType.None;
         string m_AutoFileName;
