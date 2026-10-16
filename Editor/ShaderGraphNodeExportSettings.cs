@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEditor.ShaderGraph;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
@@ -52,6 +53,7 @@ namespace NachoWhy.SgNodeExporter
         public float floatValue;
         public bool boolValue;
         public Color colorValue;
+        public bool isHdrColor;
         public Vector4 vectorValue;
         public Matrix4x4 matrixValue;
         public Texture textureValue;
@@ -76,7 +78,13 @@ namespace NachoWhy.SgNodeExporter
                     boolValue = previewProperty.booleanValue;
                     break;
                 case PropertyType.Color:
-                    colorValue = previewProperty.colorValue;
+                    // Shader Graph previews colors as a Vector4 already converted to the active
+                    // color space, so take the authored color from the property instead.
+                    if (property is ColorShaderProperty colorProperty)
+                    {
+                        colorValue = colorProperty.value;
+                        isHdrColor = colorProperty.colorMode == ColorMode.HDR;
+                    }
                     break;
                 case PropertyType.Vector2:
                 case PropertyType.Vector3:
@@ -144,7 +152,10 @@ namespace NachoWhy.SgNodeExporter
                     previewProperty.booleanValue = boolValue;
                     break;
                 case PropertyType.Color:
-                    previewProperty.colorValue = colorValue;
+                    if (previewProperty.propType == PropertyType.Color)
+                        previewProperty.colorValue = colorValue;
+                    else
+                        previewProperty.vector4Value = isHdrColor || PlayerSettings.colorSpace != ColorSpace.Linear ? colorValue : colorValue.linear;
                     break;
                 case PropertyType.Vector2:
                 case PropertyType.Vector3:

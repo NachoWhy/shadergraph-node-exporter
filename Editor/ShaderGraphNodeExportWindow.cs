@@ -283,7 +283,7 @@ namespace NachoWhy.SgNodeExporter
                             propertyOverride.boolValue = EditorGUILayout.Toggle(valueLabel, propertyOverride.boolValue);
                             break;
                         case UnityEditor.ShaderGraph.Internal.PropertyType.Color:
-                            propertyOverride.colorValue = EditorGUILayout.ColorField(valueLabel, propertyOverride.colorValue);
+                            propertyOverride.colorValue = EditorGUILayout.ColorField(valueLabel, propertyOverride.colorValue, true, true, propertyOverride.isHdrColor);
                             break;
                         case UnityEditor.ShaderGraph.Internal.PropertyType.Vector2:
                         {
