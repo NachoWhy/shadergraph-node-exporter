@@ -31,6 +31,7 @@ namespace NachoWhy.SgNodeExporter
         static readonly GUIContent s_FolderLabel = new GUIContent("Folder", "Destination folder. Relative paths are resolved from the Unity project root.");
         static readonly GUIContent s_BrowseButton = new GUIContent("Browse", "Choose the destination folder on disk.");
         static readonly GUIContent s_FileNameLabel = new GUIContent("File Name", "Base output file name. The selected format extension is added automatically, and existing files get a numeric suffix.");
+        static readonly GUIContent s_PropertyOverridesFoldout = new GUIContent("Exposed Property Overrides", "Show or hide the exposed property overrides. Enabled overrides still apply to the export while the section is collapsed.");
         static readonly GUIContent s_PropertyOverrideToggle = new GUIContent(string.Empty, "Enable this property override for the export. When disabled, the graph's preview/default value is used.");
         static readonly GUIContent s_ExportButton = new GUIContent("Export", "Render the selected node output and write it to disk.");
         static readonly GUIContent[] s_AntiAliasingOptions =
@@ -58,6 +59,8 @@ namespace NachoWhy.SgNodeExporter
             (int)SgNodeExportDownsampleFilter.Smooth
         };
 
+        static GUIStyle s_BoldFoldoutStyle;
+
         readonly SgNodeExportSettings m_Settings = new SgNodeExportSettings();
         readonly List<SgPropertyOverride> m_PropertyOverrides = new List<SgPropertyOverride>();
 
@@ -66,6 +69,7 @@ namespace NachoWhy.SgNodeExporter
         List<MaterialSlot> m_OutputSlots = new List<MaterialSlot>();
         MaterialSlot m_OutputSlot;
         Vector2 m_Scroll;
+        bool m_ShowPropertyOverrides = true;
         string m_Status;
         MessageType m_StatusType = MessageType.None;
         string m_AutoFileName;
@@ -113,6 +117,7 @@ namespace NachoWhy.SgNodeExporter
             if (string.IsNullOrWhiteSpace(m_Settings.fileName))
                 m_Settings.fileName = m_AutoFileName;
 
+            m_ShowPropertyOverrides = GetBoolPref("ShowPropertyOverrides", m_ShowPropertyOverrides);
             m_PropertyOverrides.Clear();
             foreach (var property in m_Graph.properties.Where(p => p.isExposed))
                 m_PropertyOverrides.Add(new SgPropertyOverride(property));
@@ -223,7 +228,17 @@ namespace NachoWhy.SgNodeExporter
 
         void DrawPropertyOverrides()
         {
-            EditorGUILayout.LabelField("Exposed Property Overrides", EditorStyles.boldLabel);
+            s_BoldFoldoutStyle ??= new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold };
+            var showPropertyOverrides = EditorGUILayout.Foldout(m_ShowPropertyOverrides, s_PropertyOverridesFoldout, true, s_BoldFoldoutStyle);
+            if (showPropertyOverrides != m_ShowPropertyOverrides)
+            {
+                m_ShowPropertyOverrides = showPropertyOverrides;
+                EditorPrefs.SetBool(GetPrefKey("ShowPropertyOverrides"), m_ShowPropertyOverrides);
+            }
+
+            if (!m_ShowPropertyOverrides)
+                return;
+
             if (m_PropertyOverrides.Count == 0)
             {
                 EditorGUILayout.HelpBox("This graph has no exposed properties.", MessageType.None);
